@@ -15,11 +15,6 @@ class AppException(HTTPException):
         self.message = message
         self.details = details
 
-
-# =====================================================
-# Каталог ошибок
-# =====================================================
-
 def product_not_found(product_id: int):
     return AppException(
         status_code=404,
