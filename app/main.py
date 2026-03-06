@@ -9,10 +9,6 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
-# =========================
-# CONFIG
-# =========================
-
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 20
@@ -20,18 +16,10 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 security = HTTPBearer()
 
-# =========================
-# ROLES
-# =========================
-
 class UserRole(str, Enum):
     USER = "USER"
     SELLER = "SELLER"
     ADMIN = "ADMIN"
-
-# =========================
-# DATABASES (in-memory)
-# =========================
 
 users_db = {}
 products_db = {}
@@ -39,10 +27,6 @@ orders_db = {}
 promo_codes_db = {
     "DISCOUNT10": 10
 }
-
-# =========================
-# MODELS
-# =========================
 
 class RegisterRequest(BaseModel):
     email: str
@@ -60,8 +44,6 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
 
-# -------- PRODUCTS --------
-
 class ProductCreate(BaseModel):
     name: str
     price: float
@@ -75,8 +57,6 @@ class ProductResponse(BaseModel):
     name: str
     price: float
     seller_id: str
-
-# -------- ORDERS --------
 
 class Item(BaseModel):
     name: str
@@ -98,15 +78,9 @@ class OrderResponse(BaseModel):
     total_price: float
     status: str
 
-# -------- PROMO --------
-
 class PromoCreate(BaseModel):
     code: str
     discount_percent: int
-
-# =========================
-# UTILS
-# =========================
 
 def access_denied():
     raise HTTPException(status_code=403, detail={"error_code": "ACCESS_DENIED"})
@@ -155,10 +129,6 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         "role": payload.get("role")
     }
 
-# =========================
-# AUTH
-# =========================
-
 @app.post("/auth/register")
 def register(data: RegisterRequest):
     if data.email in users_db:
@@ -205,10 +175,6 @@ def refresh(data: RefreshRequest):
             break
 
     return {"access_token": create_access_token(user_id, role)}
-
-# =========================
-# PRODUCTS (ROLE MATRIX)
-# =========================
 
 @app.get("/products", response_model=List[ProductResponse])
 def list_products():
@@ -271,10 +237,6 @@ def delete_product(product_id: str, current_user: dict = Depends(get_current_use
 
     del products_db[product_id]
     return {"message": "Product deleted"}
-
-# =========================
-# ORDERS (ROLE MATRIX)
-# =========================
 
 @app.post("/orders", response_model=OrderResponse)
 def create_order(data: OrderCreate, current_user: dict = Depends(get_current_user)):
@@ -343,10 +305,6 @@ def cancel_order(order_id: str, current_user: dict = Depends(get_current_user)):
 
     order["status"] = "CANCELLED"
     return {"message": "Order cancelled"}
-
-# =========================
-# PROMO CODES
-# =========================
 
 @app.post("/promo-codes")
 def create_promo(data: PromoCreate, current_user: dict = Depends(get_current_user)):
