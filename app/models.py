@@ -16,10 +16,6 @@ class Product(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
-
-# =========================
-# Новая модель Order
-# =========================
 class Order(Base):
     __tablename__ = "orders"
 
