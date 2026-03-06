@@ -1,20 +1,15 @@
-# Python
 venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Environment
 .env
 
-# IDE
 .vscode/
 .idea/
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Generated OpenAPI code
 app/generated/
